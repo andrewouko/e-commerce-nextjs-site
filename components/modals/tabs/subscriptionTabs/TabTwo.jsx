@@ -21,13 +21,26 @@ const TabTwo = ({ data, updateTabIndex }) => {
   const chakraToast = useToast();
 
   const handleProcessPayment = async () => {
+    let error_msg;
+    const isValidUser = [
+      "firstname",
+      "lastname",
+      "email",
+      "gender",
+      "phone",
+    ].every((prop) => {
+      return data[prop] && data[prop].length > 0;
+    });
+    if (!isValidUser) error_msg = "Please ensure you are signed in";
+
     // check is user has confirmed information
     const confirmInfoBtn = document.querySelector("input#confirmInfoBtn");
-
     if (!confirmInfoBtn.checked)
+      error_msg = "Please confirm that the above information is correct";
+    if (error_msg)
       return chakraToast({
         title: "Error",
-        description: "Please confirm the information displayed",
+        description: error_msg,
         status: "error",
         duration: 5000,
         isClosable: false,

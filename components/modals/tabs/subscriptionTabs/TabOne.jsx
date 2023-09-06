@@ -10,12 +10,14 @@ import {
   Flex,
   Textarea,
   Spacer,
+  useToast,
 } from "@chakra-ui/react";
 import ButtonComponent from "@components/Button";
 import { ThemeColors } from "@constants/constants";
 import React, { useState } from "react";
 
 const TabOne = ({ updateTabIndex, setTabOneData }) => {
+  const chakraToast = useToast();
   const [moreInfo, setMoreInfo] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState({
     address1: "",
@@ -26,6 +28,18 @@ const TabOne = ({ updateTabIndex, setTabOneData }) => {
 
   const handleSettingData = () => {
     setTabOneData({ ...deliveryAddress, moreInfo, quantity: numberOfCards });
+    let error_msg;
+    if (!deliveryAddress.address1 || deliveryAddress.address1.length < 1)
+      error_msg = "Please enter a valid address for address 1";
+    if (parseInt(numberOfCards) < 1) error_msg = "Purchase atleast one card";
+    if (error_msg)
+      return chakraToast({
+        title: "Error",
+        description: error_msg,
+        status: "error",
+        duration: 5000,
+        isClosable: false,
+      });
     updateTabIndex(1);
   };
 
@@ -89,7 +103,7 @@ const TabOne = ({ updateTabIndex, setTabOneData }) => {
                     <Input
                       type="text"
                       id="address2"
-                      placeholder="address2 is required"
+                      placeholder="address2 is optional"
                       name="address2"
                       value={deliveryAddress.address2}
                       onChange={(e) =>

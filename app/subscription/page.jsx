@@ -4,29 +4,19 @@
 import {
   Box,
   Flex,
-  FormControl,
-  FormLabel,
-  Grid,
-  Heading,
-  Input,
   Modal,
   ModalCloseButton,
   ModalContent,
-  Select,
-  Stack,
   Text,
-  Textarea,
   useDisclosure,
-  useToast,
+  useToast
 } from "@chakra-ui/react";
-import ButtonComponent from "@components/Button";
 import SubscriptionCard from "@components/SubscriptionCard";
 import TabOne from "@components/modals/tabs/subscriptionTabs/TabOne";
 import TabThree from "@components/modals/tabs/subscriptionTabs/TabThree";
 import TabTwo from "@components/modals/tabs/subscriptionTabs/TabTwo";
-import { Images, ThemeColors } from "@constants/constants";
+import { ThemeColors } from "@constants/constants";
 import { useSubscriptionCardGetMutation } from "@slices/usersApiSlice";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -90,6 +80,23 @@ const Subscription = () => {
                 margin={"auto"}
                 width={{ base: "90%", md: "100%", xl: "70%" }}
               >
+                {/* <Grid
+                  gridTemplateColumns={{
+                    base: "repeat(1, 1fr)",
+                    md: "repeat(1, 1fr)",
+                    xl: "repeat(4, 1fr)",
+                  }}
+                  gridGap={"1rem"}
+                >
+                  {subscriptionCards.length > 0 &&
+                    subscriptionCards.map((card, index) => (
+                      <SubscriptionCard
+                        card={card}
+                        key={index}
+                        selectedCard={handleCardSelect}
+                      />
+                    ))}
+                </Grid> */}
                 <Flex
                   flexDirection={{
                     base: "column-reverse",
@@ -113,7 +120,7 @@ const Subscription = () => {
                       padding={{
                         base: "1rem 0 2rem 0",
                         md: "1rem 0",
-                        xl: "3rem",
+                        xl: "1rem 3rem",
                       }}
                     >
                       <Text
@@ -139,22 +146,11 @@ const Subscription = () => {
                           }}
                         >
                           {" "}
-                          25%
+                          25% discount
                         </span>{" "}
-                        subscription discount
+                        on every order you make
                       </Text>
                     </Box>
-
-                    <div className="py-8 lg:block hidden">
-                      <div className="flex justify-center items-center relative">
-                        <Image
-                          src={Images.img5}
-                          height={300}
-                          width={300}
-                          alt="icon"
-                        />
-                      </div>
-                    </div>
                   </Box>
                 </Flex>
               </Box>

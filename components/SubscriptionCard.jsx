@@ -9,8 +9,6 @@ const SubscriptionCard = ({ card, selectedCard }) => {
   const UGX = (value) =>
     currency(value, { symbol: "UGX", precision: 0, separator: "," });
 
-  console.log({ card });
-
   return (
     <>
       <Box

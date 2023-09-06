@@ -16,8 +16,9 @@ import { ThemeColors } from "@constants/constants";
 import { useSubscriptionCardPostMutation } from "@slices/usersApiSlice";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCreateFlutterwavePaymentMutation } from "@slices/paymentApiSlice";
 
-import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
+// import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 
 const TabThree = ({ updateTabIndex, data }) => {
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -28,7 +29,9 @@ const TabThree = ({ updateTabIndex, data }) => {
 
   const chakraToast = useToast();
 
-  const flwConfig = {
+  const [createFlutterwavePayment] = useCreateFlutterwavePaymentMutation();
+
+  /* const flwConfig = {
     public_key: "FLWPUBK_TEST-07d1b505448d1358e34d597736dd6b8a-X",
     tx_ref: Date.now(),
     amount: parseInt(data?.selectedCard?.price) * parseInt(data?.quantity),
@@ -44,7 +47,7 @@ const TabThree = ({ updateTabIndex, data }) => {
       description: `You are purchasing a ${data?.selectedCard?.type} ${data?.selectedCard?.name} YooCard`,
       logo: "https://www.logolynx.com/images/logolynx/22/2239ca38f5505fbfce7e55bbc0604386.jpeg",
     },
-  };
+  }; */
 
   //const handleFlutterPayment = useFlutterwave(flwConfig);
 
@@ -100,6 +103,42 @@ const TabThree = ({ updateTabIndex, data }) => {
       //   },
       //   onClose: () => {
       // });
+      try {
+        const res = await createFlutterwavePayment({
+          amount: parseFloat(data.selectedCard.price) * parseInt(data.quantity),
+          currency: "UGX",
+          delivery: {
+            delivery_address_1: data.address1,
+            delivery_address_2: data?.address2,
+            additional_information: data?.additional_information,
+          },
+          customer: {
+            email: data.email,
+            phone_number: data.phone,
+            firstname: data.firstname,
+            lastname: data.lastname,
+            gender: data.gender,
+          },
+          description: `You are purchasing a ${data?.selectedCard?.type} ${data?.selectedCard?.name} YooCard`,
+        }).unwrap();
+        if (res.status == 200) {
+          const { status, data, message } = res.data;
+          window.location.replace(data.link);
+          // set loading to be false
+          setLoading((prevState) => (prevState ? false : true));
+        }
+      } catch (err) {
+        console.error(err);
+        let message = `Creation of payment link failed`;
+        if (err.message) message = err.message;
+        chakraToast({
+          title: "Error",
+          description: message,
+          status: "error",
+          duration: 5000,
+          isClosable: false,
+        });
+      }
 
       return;
     }
@@ -151,13 +190,13 @@ const TabThree = ({ updateTabIndex, data }) => {
           </Heading>
         </Box>
         <Box padding={"1rem 0"}>
-          <Flex hidden>
+          <Flex>
             <Box width={{ base: "100%", md: "90%", xl: "80%" }} margin={"auto"}>
               <Grid
                 gridTemplateColumns={{
-                  base: "repeat(3, 1fr)",
-                  md: "repeat(3, 1fr)",
-                  xl: "repeat(3, 1fr)",
+                  base: "repeat(2, 1fr)",
+                  md: "repeat(2, 1fr)",
+                  xl: "repeat(2, 1fr)",
                 }}
                 gridGap={"1rem"}
               >
@@ -202,30 +241,29 @@ const TabThree = ({ updateTabIndex, data }) => {
                   }}
                   cursor={"pointer"}
                   background={
-                    paymentMethod === "mobileMoney"
+                    paymentMethod === "flutterwave"
                       ? ThemeColors.darkColor
                       : ThemeColors.lightColor
                   }
                   borderRadius={"0.5rem"}
                   border={
-                    "1.7px solid " + paymentMethod === "mobileMoney"
+                    "1.7px solid " + paymentMethod === "flutterwave"
                       ? ThemeColors.lightColor
                       : ThemeColors.darkColor
                   }
-                  onClick={() => setPaymentMethod("mobileMoney")}
-                  hidden
+                  onClick={() => setPaymentMethod("flutterwave")}
                 >
                   <Text
                     fontSize={{ base: "sm", md: "lg", xl: "2xl" }}
                     textAlign={"center"}
                     alignItems={"center"}
                     color={
-                      paymentMethod === "mobileMoney"
+                      paymentMethod === "flutterwave"
                         ? ThemeColors.lightColor
                         : ThemeColors.darkColor
                     }
                   >
-                    Mobile Money
+                    Pay now
                   </Text>
                 </Box>
                 <Box
@@ -265,7 +303,7 @@ const TabThree = ({ updateTabIndex, data }) => {
               </Grid>
             </Box>
           </Flex>
-          <Flex>
+          <Flex hidden>
             <Box
               width={{ base: "45%", md: "40%", xl: "30%" }}
               margin={"auto"}

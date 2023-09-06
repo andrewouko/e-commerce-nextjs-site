@@ -1,0 +1,23 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../lib/payment/payment.db"
+}
+
+model Payment {
+  id         Int    @id @default(autoincrement())
+  tx_ref String @unique
+  amount    Float
+  currency  String
+  customer String
+  delivery String
+  date DateTime
+  callback String?
+  description String?
+}
